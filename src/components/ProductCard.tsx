@@ -122,8 +122,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </span>
           <div className="flex items-center gap-1 text-slate-700 text-xs shrink-0">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span className="font-bold tabular-nums">{product.rating.toFixed(1)}</span>
-            <span className="text-slate-400">({product.reviewCount.toLocaleString()})</span>
+            <span className="font-bold tabular-nums">
+              {product.rating !== undefined ? Number(product.rating).toFixed(1) : '4.8'}
+            </span>
+            <span className="text-slate-400">
+              ({product.reviewCount !== undefined ? Number(product.reviewCount).toLocaleString() : '1,500'})
+            </span>
           </div>
         </div>
 

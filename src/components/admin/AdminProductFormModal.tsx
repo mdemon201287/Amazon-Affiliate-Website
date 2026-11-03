@@ -268,6 +268,9 @@ export const AdminProductFormModal: React.FC<AdminProductFormModalProps> = ({
     const formattedAmazonUrl = formatAmazonAffiliateUrl(amazonUrl, affiliateTag);
     const primaryImage = gallery[coverIndex] || gallery[0] || PRESET_IMAGES[0].url;
 
+    const parsedRating = parseFloat(rating);
+    const parsedReviewCount = parseInt(reviewCount.replace(/[^0-9]/g, ''), 10);
+
     onSave({
       ...(productToEdit ? { id: productToEdit.id } : {}),
       title: title.trim(),
@@ -283,8 +286,8 @@ export const AdminProductFormModal: React.FC<AdminProductFormModalProps> = ({
       videoType,
       videoUrl: videoUrl.trim(),
       badge,
-      rating: parseFloat(rating) || 4.8,
-      reviewCount: parseInt(reviewCount) || 100,
+      rating: !isNaN(parsedRating) ? Math.min(5, Math.max(1, parsedRating)) : 4.8,
+      reviewCount: !isNaN(parsedReviewCount) ? Math.max(0, parsedReviewCount) : 1500,
       description: description.trim(),
       features,
     });
@@ -656,6 +659,120 @@ export const AdminProductFormModal: React.FC<AdminProductFormModalProps> = ({
                   <option value="Prime Day Deal">Prime Day Deal</option>
                   <option value="">No Badge</option>
                 </select>
+              </div>
+
+              {/* Customer Review Rating & Total Reviewers Count (User requested manual inputs) */}
+              <div className="md:col-span-3 p-4 rounded-2xl bg-gradient-to-r from-amber-50/70 via-amber-50/40 to-slate-50 border border-amber-300/80 shadow-2xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
+                    <div className="w-6 h-6 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
+                      <Star className="w-3.5 h-3.5 fill-slate-950" />
+                    </div>
+                    <div>
+                      <span>Customer Star Rating & Reviewers Count</span>
+                      <span className="block text-[10px] text-slate-500 font-normal">
+                        রিভিউ রেটিং (যেমন 4.8, 5.0) এবং মোট রিভিউয়ার সংখ্যা (যেমন 1000, 1500) লিখে দিন
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Live Storefront Preview Badge */}
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-xl border border-amber-300 text-xs shadow-xs self-start sm:self-auto">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Live Preview:</span>
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                    <span className="font-extrabold text-slate-900 font-mono">
+                      {parseFloat(rating) ? parseFloat(rating).toFixed(1) : '4.8'}
+                    </span>
+                    <span className="text-slate-500 font-mono text-[11px]">
+                      ({parseInt(reviewCount) ? parseInt(reviewCount).toLocaleString() : '1,500'})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  {/* Rating Input Field */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <span>Star Rating (1.0 to 5.0) *</span>
+                      </label>
+                      <span className="text-[10px] text-amber-700 font-mono font-medium">e.g. 4.8, 5.0</span>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="1.0"
+                        max="5.0"
+                        required
+                        value={rating}
+                        onChange={(e) => setRating(e.target.value)}
+                        placeholder="4.8"
+                        className="w-full px-3.5 py-2 text-xs bg-white border border-amber-300 rounded-xl font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-2xs"
+                      />
+                    </div>
+                    {/* Quick Rating Presets */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] text-slate-400 font-medium">Quick Choice:</span>
+                      {['5.0', '4.9', '4.8', '4.7', '4.6'].map((rVal) => (
+                        <button
+                          key={rVal}
+                          type="button"
+                          onClick={() => setRating(rVal)}
+                          className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
+                            rating === rVal
+                              ? 'bg-amber-400 text-slate-950 shadow-xs'
+                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-amber-100 hover:border-amber-300'
+                          }`}
+                        >
+                          {rVal} ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Total Reviews / Reviewers Count Input Field */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Total Customer Reviews Count *</span>
+                      </label>
+                      <span className="text-[10px] text-amber-700 font-mono font-medium">e.g. 1000, 1500</span>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        required
+                        value={reviewCount}
+                        onChange={(e) => setReviewCount(e.target.value)}
+                        placeholder="1500"
+                        className="w-full px-3.5 py-2 text-xs bg-white border border-amber-300 rounded-xl font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-2xs"
+                      />
+                    </div>
+                    {/* Quick Review Count Presets */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] text-slate-400 font-medium">Quick Choice:</span>
+                      {['500', '1000', '1500', '2500', '5000', '10000'].map((cVal) => (
+                        <button
+                          key={cVal}
+                          type="button"
+                          onClick={() => setReviewCount(cVal)}
+                          className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
+                            reviewCount === cVal
+                              ? 'bg-amber-400 text-slate-950 shadow-xs'
+                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-amber-100 hover:border-amber-300'
+                          }`}
+                        >
+                          {parseInt(cVal).toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -787,8 +787,8 @@ class StoreService {
         variants: Array.isArray(product.variants) ? product.variants : [],
         videoType: product.videoType || 'none',
         videoUrl: product.videoUrl || '',
-        rating: product.rating || 4.8,
-        reviewCount: product.reviewCount || 100,
+        rating: typeof product.rating === 'number' && !isNaN(product.rating) ? product.rating : 4.8,
+        reviewCount: typeof product.reviewCount === 'number' && !isNaN(product.reviewCount) ? product.reviewCount : 1500,
         features: product.features && product.features.length ? product.features : ['100% genuine product', 'Amazon Prime 2-day delivery eligible'],
         description: product.description || '',
         badge: product.badge || '',
@@ -815,6 +815,8 @@ class StoreService {
           variants: Array.isArray(product.variants) ? product.variants : (this.products[idx].variants || []),
           price: Number(product.price),
           dealPrice: Number(product.dealPrice || product.price),
+          rating: typeof product.rating === 'number' && !isNaN(product.rating) ? product.rating : (this.products[idx].rating ?? 4.8),
+          reviewCount: typeof product.reviewCount === 'number' && !isNaN(product.reviewCount) ? product.reviewCount : (this.products[idx].reviewCount ?? 1500),
           updatedAt: new Date().toISOString(),
         };
         this.products[idx] = saved;

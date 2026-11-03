@@ -144,9 +144,10 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, onRefres
                           <div className="text-[11px] text-slate-500 flex items-center gap-2">
                             <span>{prod.brand}</span>
                             <span>·</span>
-                            <span className="flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                              <span className="font-mono">{prod.rating}</span>
+                            <span className="flex items-center gap-1 font-medium">
+                              <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                              <span className="font-mono text-slate-700">{prod.rating !== undefined ? Number(prod.rating).toFixed(1) : '4.8'}</span>
+                              <span className="text-slate-400 font-mono">({prod.reviewCount !== undefined ? Number(prod.reviewCount).toLocaleString() : '1,500'})</span>
                             </span>
                           </div>
                         </div>
